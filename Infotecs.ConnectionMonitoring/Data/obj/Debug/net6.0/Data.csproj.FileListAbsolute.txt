@@ -1,0 +1,15 @@
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\bin\Debug\net6.0\Data.deps.json
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\bin\Debug\net6.0\Data.dll
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\bin\Debug\net6.0\ref\Data.dll
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\bin\Debug\net6.0\Data.pdb
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\bin\Debug\net6.0\Core.dll
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\bin\Debug\net6.0\Core.pdb
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\obj\Debug\net6.0\Data.csproj.AssemblyReference.cache
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\obj\Debug\net6.0\Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\obj\Debug\net6.0\Data.AssemblyInfoInputs.cache
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\obj\Debug\net6.0\Data.AssemblyInfo.cs
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\obj\Debug\net6.0\Data.csproj.CoreCompileInputs.cache
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\obj\Debug\net6.0\Data.csproj.CopyComplete
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\obj\Debug\net6.0\Data.dll
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\obj\Debug\net6.0\ref\Data.dll
+C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\Data\obj\Debug\net6.0\Data.pdb

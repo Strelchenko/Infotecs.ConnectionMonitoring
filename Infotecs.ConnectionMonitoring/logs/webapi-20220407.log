@@ -1,0 +1,63 @@
+[2022-04-07 13:12:47.530 +03:00  INF]  Now listening on: https://localhost:7052
+[2022-04-07 13:12:47.559 +03:00  INF]  Now listening on: http://localhost:5052
+[2022-04-07 13:12:47.561 +03:00  INF]  Application started. Press Ctrl+C to shut down.
+[2022-04-07 13:12:47.562 +03:00  INF]  Hosting environment: Development
+[2022-04-07 13:12:47.562 +03:00  INF]  Content root path: C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\WebApi\
+[2022-04-07 13:12:48.886 +03:00  INF]  Request starting HTTP/2 GET https://localhost:7052/swagger/index.html - -
+[2022-04-07 13:12:49.151 +03:00  INF]  Request finished HTTP/2 GET https://localhost:7052/swagger/index.html - - - 200 - text/html;charset=utf-8 270.2539ms
+[2022-04-07 13:12:49.543 +03:00  INF]  Request starting HTTP/2 GET https://localhost:7052/_framework/aspnetcore-browser-refresh.js - -
+[2022-04-07 13:12:49.547 +03:00  INF]  Request finished HTTP/2 GET https://localhost:7052/_framework/aspnetcore-browser-refresh.js - - - 200 11940 application/javascript;+charset=utf-8 4.0215ms
+[2022-04-07 13:12:49.893 +03:00  INF]  Request starting HTTP/2 GET https://localhost:7052/swagger/v1/swagger.json - -
+[2022-04-07 13:12:49.977 +03:00  INF]  Request finished HTTP/2 GET https://localhost:7052/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 83.9155ms
+[2022-04-07 13:13:08.622 +03:00  INF]  Request starting HTTP/2 POST https://localhost:7052/api/ConnectionInfo application/json 88
+[2022-04-07 13:13:08.627 +03:00  INF]  Executing endpoint 'WebApi.Controllers.ConnectionInfoController.Save (WebApi)'
+[2022-04-07 13:13:08.648 +03:00  INF]  Route matched with {action = "Save", controller = "ConnectionInfo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult] Save(Core.Models.ConnectionInfo) on controller WebApi.Controllers.ConnectionInfoController (WebApi).
+[2022-04-07 13:13:08.672 +03:00  INF]  Device with id string has been added
+[2022-04-07 13:13:08.676 +03:00  INF]  Executing StatusCodeResult, setting HTTP status code 200
+[2022-04-07 13:13:08.680 +03:00  INF]  Executed action WebApi.Controllers.ConnectionInfoController.Save (WebApi) in 28.1119ms
+[2022-04-07 13:13:08.681 +03:00  INF]  Executed endpoint 'WebApi.Controllers.ConnectionInfoController.Save (WebApi)'
+[2022-04-07 13:13:08.681 +03:00  INF]  Request finished HTTP/2 POST https://localhost:7052/api/ConnectionInfo application/json 88 - 200 0 - 59.3569ms
+[2022-04-07 13:13:12.721 +03:00  INF]  Request starting HTTP/2 POST https://localhost:7052/api/ConnectionInfo application/json 85
+[2022-04-07 13:13:12.721 +03:00  INF]  Executing endpoint 'WebApi.Controllers.ConnectionInfoController.Save (WebApi)'
+[2022-04-07 13:13:12.721 +03:00  INF]  Route matched with {action = "Save", controller = "ConnectionInfo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult] Save(Core.Models.ConnectionInfo) on controller WebApi.Controllers.ConnectionInfoController (WebApi).
+[2022-04-07 13:13:12.723 +03:00  INF]  Device with id 111 has been added
+[2022-04-07 13:13:12.723 +03:00  INF]  Executing StatusCodeResult, setting HTTP status code 200
+[2022-04-07 13:13:12.723 +03:00  INF]  Executed action WebApi.Controllers.ConnectionInfoController.Save (WebApi) in 1.7964ms
+[2022-04-07 13:13:12.723 +03:00  INF]  Executed endpoint 'WebApi.Controllers.ConnectionInfoController.Save (WebApi)'
+[2022-04-07 13:13:12.724 +03:00  INF]  Request finished HTTP/2 POST https://localhost:7052/api/ConnectionInfo application/json 85 - 200 0 - 2.9384ms
+[2022-04-07 13:13:16.203 +03:00  INF]  Request starting HTTP/2 GET https://localhost:7052/api/ConnectionInfo - -
+[2022-04-07 13:13:16.203 +03:00  INF]  Executing endpoint 'WebApi.Controllers.ConnectionInfoController.GetAll (WebApi)'
+[2022-04-07 13:13:16.206 +03:00  INF]  Route matched with {action = "GetAll", controller = "ConnectionInfo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[Core.Models.ConnectionInfo[]]] GetAll() on controller WebApi.Controllers.ConnectionInfoController (WebApi).
+[2022-04-07 13:13:16.207 +03:00  INF]  Get all devices
+[2022-04-07 13:13:16.212 +03:00  INF]  Executing OkObjectResult, writing value of type 'Core.Models.ConnectionInfo[]'.
+[2022-04-07 13:13:16.216 +03:00  INF]  Executed action WebApi.Controllers.ConnectionInfoController.GetAll (WebApi) in 9.7256ms
+[2022-04-07 13:13:16.216 +03:00  INF]  Executed endpoint 'WebApi.Controllers.ConnectionInfoController.GetAll (WebApi)'
+[2022-04-07 13:13:16.216 +03:00  INF]  Request finished HTTP/2 GET https://localhost:7052/api/ConnectionInfo - - - 200 - application/json;+charset=utf-8 13.1295ms
+[2022-04-07 15:45:10.918 +03:00  INF]  Now listening on: https://localhost:7052
+[2022-04-07 15:45:10.954 +03:00  INF]  Now listening on: http://localhost:5052
+[2022-04-07 15:45:10.959 +03:00  INF]  Application started. Press Ctrl+C to shut down.
+[2022-04-07 15:45:10.959 +03:00  INF]  Hosting environment: Development
+[2022-04-07 15:45:10.959 +03:00  INF]  Content root path: C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\WebApi\
+[2022-04-07 15:45:12.807 +03:00  INF]  Request starting HTTP/2 GET https://localhost:7052/swagger/index.html - -
+[2022-04-07 15:45:13.044 +03:00  INF]  Request finished HTTP/2 GET https://localhost:7052/swagger/index.html - - - 200 - text/html;charset=utf-8 240.6223ms
+[2022-04-07 15:45:13.358 +03:00  INF]  Request starting HTTP/2 GET https://localhost:7052/_framework/aspnetcore-browser-refresh.js - -
+[2022-04-07 15:45:13.363 +03:00  INF]  Request finished HTTP/2 GET https://localhost:7052/_framework/aspnetcore-browser-refresh.js - - - 200 11940 application/javascript;+charset=utf-8 5.0356ms
+[2022-04-07 15:45:13.681 +03:00  INF]  Request starting HTTP/2 GET https://localhost:7052/swagger/v1/swagger.json - -
+[2022-04-07 15:45:13.768 +03:00  INF]  Request finished HTTP/2 GET https://localhost:7052/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 87.0779ms
+[2022-04-07 15:45:45.688 +03:00  INF]  Request starting HTTP/1.1 GET https://localhost:7052/swagger/index.html - -
+[2022-04-07 15:45:45.696 +03:00  INF]  Request finished HTTP/1.1 GET https://localhost:7052/swagger/index.html - - - 200 - text/html;charset=utf-8 8.3379ms
+[2022-04-07 15:46:34.977 +03:00  INF]  Request starting HTTP/1.1 GET https://localhost:7052/swagger/v1/swagger.json - -
+[2022-04-07 15:46:34.978 +03:00  INF]  Request finished HTTP/1.1 GET https://localhost:7052/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 1.3179ms
+[2022-04-07 15:47:36.754 +03:00  INF]  Now listening on: https://localhost:7052
+[2022-04-07 15:47:36.783 +03:00  INF]  Now listening on: http://localhost:5052
+[2022-04-07 15:47:36.787 +03:00  INF]  Application started. Press Ctrl+C to shut down.
+[2022-04-07 15:47:36.787 +03:00  INF]  Hosting environment: Development
+[2022-04-07 15:47:36.787 +03:00  INF]  Content root path: C:\Projects\Work\Infotecs\Infotecs.ConnectionMonitoring\Infotecs.ConnectionMonitoring\WebApi\
+[2022-04-07 15:47:38.615 +03:00  INF]  Request starting HTTP/2 GET https://localhost:7052/swagger/index.html - -
+[2022-04-07 15:47:38.850 +03:00  INF]  Request finished HTTP/2 GET https://localhost:7052/swagger/index.html - - - 200 - text/html;charset=utf-8 238.0141ms
+[2022-04-07 15:47:39.179 +03:00  INF]  Request starting HTTP/2 GET https://localhost:7052/_framework/aspnetcore-browser-refresh.js - -
+[2022-04-07 15:47:39.183 +03:00  INF]  Request finished HTTP/2 GET https://localhost:7052/_framework/aspnetcore-browser-refresh.js - - - 200 11940 application/javascript;+charset=utf-8 4.5592ms
+[2022-04-07 15:47:39.468 +03:00  INF]  Request starting HTTP/2 GET https://localhost:7052/swagger/v1/swagger.json - -
+[2022-04-07 15:47:39.568 +03:00  INF]  Request finished HTTP/2 GET https://localhost:7052/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 99.9715ms
+[2022-04-07 15:48:30.907 +03:00  INF]  Request starting HTTP/1.1 GET https://localhost:7052/swagger/v1/swagger.json - -
+[2022-04-07 15:48:30.915 +03:00  INF]  Request finished HTTP/1.1 GET https://localhost:7052/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 7.8735ms
