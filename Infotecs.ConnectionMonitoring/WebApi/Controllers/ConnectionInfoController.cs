@@ -9,10 +9,12 @@ namespace WebApi.Controllers;
 public class ConnectionInfoController : ControllerBase
 {
     private readonly IConnectionInfoService connectionInfoService;
+    private readonly ILogger<ConnectionInfoController> logger;
 
-    public ConnectionInfoController(IConnectionInfoService connectionInfoService)
+    public ConnectionInfoController(IConnectionInfoService connectionInfoService, ILogger<ConnectionInfoController> logger)
     {
         this.connectionInfoService = connectionInfoService;
+        this.logger = logger;
     }
 
     [HttpGet]
@@ -26,6 +28,8 @@ public class ConnectionInfoController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Save([FromBody] ConnectionInfo connectionInfo)
     {
+        logger.LogInformation("Connection: {@ConnectionInfo}", connectionInfo);
+
         await connectionInfoService.SaveAsync(connectionInfo);
 
         return Ok();
