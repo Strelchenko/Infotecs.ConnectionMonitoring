@@ -8,17 +8,17 @@ namespace WebApi.Controllers;
 [Route("api/[controller]")]
 public class ConnectionInfoController : ControllerBase
 {
-    private readonly IConnectionInfoService _connectionInfoService;
+    private readonly IConnectionInfoService connectionInfoService;
 
     public ConnectionInfoController(IConnectionInfoService connectionInfoService)
     {
-        _connectionInfoService = connectionInfoService;
+        this.connectionInfoService = connectionInfoService;
     }
 
     [HttpGet]
     public async Task<ActionResult<ConnectionInfo[]>> GetAll()
     {
-        var connectionsInfo = await _connectionInfoService.GetAllAsync();
+        var connectionsInfo = await connectionInfoService.GetAllAsync();
 
         return Ok(connectionsInfo);
     }
@@ -26,7 +26,7 @@ public class ConnectionInfoController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Save([FromBody] ConnectionInfo connectionInfo)
     {
-        await _connectionInfoService.SaveAsync(connectionInfo);
+        await connectionInfoService.SaveAsync(connectionInfo);
 
         return Ok();
     }
