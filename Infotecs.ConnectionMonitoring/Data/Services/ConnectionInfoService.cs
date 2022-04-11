@@ -18,6 +18,10 @@ public class ConnectionInfoService : IConnectionInfoService
         this.repository = repository;
     }
 
+    /// <summary>
+    /// Get all connections
+    /// </summary>
+    /// <returns></returns>
     public async Task<ConnectionInfo[]> GetAllAsync()
     {
         logger.LogInformation("Get all devices");
@@ -27,6 +31,12 @@ public class ConnectionInfoService : IConnectionInfoService
         return result.Adapt<ConnectionInfo[]>();
     }
 
+    /// <summary>
+    /// Create or update connection info
+    /// </summary>
+    /// <param name="connectionInfo">Connection info</param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     public async Task SaveAsync(ConnectionInfo connectionInfo)
     {
         if (connectionInfo.Id == null)

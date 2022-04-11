@@ -1,5 +1,8 @@
-﻿namespace Core.Models;
+namespace Core.Models;
 
+/// <summary>
+/// Connection info
+/// </summary>
 public class ConnectionInfo
 {
     public string? Id { get; set; }

@@ -1,5 +1,8 @@
 namespace Data.Models;
 
+/// <summary>
+/// Connection info entity
+/// </summary>
 public class ConnectionInfoEntity
 {
     public string? Id { get; set; }

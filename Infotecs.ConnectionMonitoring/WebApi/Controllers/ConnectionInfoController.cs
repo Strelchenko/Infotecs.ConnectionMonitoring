@@ -17,6 +17,10 @@ public class ConnectionInfoController : ControllerBase
         this.logger = logger;
     }
 
+    /// <summary>
+    /// Get all connections
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public async Task<ActionResult<ConnectionInfo[]>> GetAll()
     {
@@ -25,6 +29,11 @@ public class ConnectionInfoController : ControllerBase
         return Ok(connectionsInfo);
     }
 
+    /// <summary>
+    /// Create or update connection info
+    /// </summary>
+    /// <param name="connectionInfo"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<ActionResult> Save([FromBody] ConnectionInfo connectionInfo)
     {
