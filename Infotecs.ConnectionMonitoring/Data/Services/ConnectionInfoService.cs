@@ -1,45 +1,51 @@
 using Core.Models;
 using Core.Services;
+using Data.Models;
+using Data.Repositories;
+using Mapster;
 using Microsoft.Extensions.Logging;
 
 namespace Data.Services;
 
 public class ConnectionInfoService : IConnectionInfoService
 {
-    public ConnectionInfoService(ILogger<ConnectionInfoService> logger)
+    private readonly ILogger<ConnectionInfoService> logger;
+    private readonly IConnectionMonitoringRepository repository;
+
+    public ConnectionInfoService(ILogger<ConnectionInfoService> logger, IConnectionMonitoringRepository repository)
     {
         this.logger = logger;
+        this.repository = repository;
     }
 
-    public Dictionary<string, ConnectionInfo> ConnectionsInfo { get; set; } = new();
-
-    private readonly ILogger<ConnectionInfoService> logger;
-
-    public Task<ConnectionInfo[]> GetAllAsync()
+    public async Task<ConnectionInfo[]> GetAllAsync()
     {
         logger.LogInformation("Get all devices");
 
-        return Task.FromResult(ConnectionsInfo.Values.ToArray());
+        IEnumerable<ConnectionInfoEntity> result = await repository.GetAllConnectionsInfoAsync();
+
+        return result.Adapt<ConnectionInfo[]>();
     }
 
-    public Task SaveAsync(ConnectionInfo connectionInfo)
+    public async Task SaveAsync(ConnectionInfo connectionInfo)
     {
         if (connectionInfo.Id == null)
         {
-            throw new Exception("Id con not be null");
+            logger.LogError("Id can not be null");
+            throw new Exception("Id can not be null");
         }
 
-        if (ConnectionsInfo.ContainsKey(connectionInfo.Id))
+        ConnectionInfoEntity? exist = await repository.GetConnectionInfoByIdAsync(connectionInfo.Id);
+
+        if (exist != null)
         {
-            ConnectionsInfo[connectionInfo.Id] = connectionInfo;
+            await repository.UpdateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
             logger.LogInformation($"Device with id {connectionInfo.Id} has been updated");
         }
         else
         {
-            ConnectionsInfo.Add(connectionInfo.Id, connectionInfo);
+            await repository.CreateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
             logger.LogInformation($"Device with id {connectionInfo.Id} has been added");
         }
-
-        return Task.CompletedTask;
     }
 }

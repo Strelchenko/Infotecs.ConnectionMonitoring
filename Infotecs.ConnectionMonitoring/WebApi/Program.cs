@@ -1,4 +1,5 @@
 using Core.Services;
+using Data.Repositories;
 using Data.Services;
 using Serilog;
 
@@ -15,7 +16,8 @@ builder.Logging.AddSerilog(logger);
 builder.Services.AddCors();
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IConnectionInfoService, ConnectionInfoService>();
+builder.Services.AddTransient<IConnectionMonitoringRepository, ConnectionMonitoringRepository>();
+builder.Services.AddTransient<IConnectionInfoService, ConnectionInfoService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
