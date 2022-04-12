@@ -1,3 +1,4 @@
+using Core.Models;
 using Dapper;
 using Data.Models;
 using Microsoft.Extensions.Configuration;
@@ -96,6 +97,38 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
             var queryArguments = new { Id = id };
 
             await connection.ExecuteAsync(commandText, queryArguments);
+        }
+    }
+
+    /// <summary>
+    /// Get all events for current connection.
+    /// </summary>
+    /// <param name="connectionId">Connection Id.</param>
+    /// <returns>List of events.</returns>
+    public async Task<IEnumerable<ConnectionEventEntity>> GetEventsByConnectionIdAsync(string connectionId)
+    {
+        using (var connection = new NpgsqlConnection(connectionString))
+        {
+            var commandText = "SELECT * FROM \"ConnectionEvent\" WHERE \"ConnectionId\" = @connectionId";
+
+            var queryArgs = new { ConnectionId = connectionId };
+
+            return await connection.QueryAsync<ConnectionEventEntity>(commandText, queryArgs);
+        }
+    }
+
+    /// <summary>
+    /// Create event.
+    /// </summary>
+    /// <param name="connectionEvent">Event.</param>
+    /// <returns>Task.</returns>
+    public async Task CreateConnectionEventAsync(ConnectionEventEntity connectionEvent)
+    {
+        using (var connection = new NpgsqlConnection(connectionString))
+        {
+            var commandText = "INSERT INTO \"ConnectionEvent\" (\"Id\", \"Name\", \"ConnectionId\", \"EventTime\") VALUES (@Id, @Name, @ConnectionId, @EventTime)";
+
+            await connection.ExecuteAsync(commandText, connectionEvent);
         }
     }
 }
