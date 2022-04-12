@@ -33,6 +33,7 @@ public static class MigrationManager
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error migration");
+                throw;
             }
         }
 

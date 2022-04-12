@@ -19,5 +19,5 @@ public interface IConnectionEventService
     /// </summary>
     /// <param name="connectionEvents">Events list.</param>
     /// <returns>Task.</returns>
-    Task SaveAsync(IEnumerable<ConnectionEvent> connectionEvents);
+    Task SaveEventsAsync(IEnumerable<ConnectionEvent> connectionEvents);
 }

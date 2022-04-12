@@ -1,4 +1,3 @@
-using Core.Models;
 using Dapper;
 using Data.Models;
 using Microsoft.Extensions.Configuration;
