@@ -1,9 +1,9 @@
-namespace Core.Models;
+namespace Data.Models;
 
 /// <summary>
-/// Connection info.
+/// Connection info entity.
 /// </summary>
-public class ConnectionInfo
+public class ConnectionInfoEntity
 {
     /// <summary>
     /// Id.
