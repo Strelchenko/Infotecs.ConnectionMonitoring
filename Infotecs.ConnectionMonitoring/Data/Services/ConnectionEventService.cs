@@ -45,7 +45,7 @@ public class ConnectionEventService : IConnectionEventService
     /// </summary>
     /// <param name="connectionEvents">Events list.</param>
     /// <returns>Task.</returns>
-    public async Task SaveAsync(IEnumerable<ConnectionEvent> connectionEvents)
+    public async Task SaveEventsAsync(IEnumerable<ConnectionEvent> connectionEvents)
     {
         foreach (ConnectionEvent connectionEvent in connectionEvents)
         {
@@ -58,6 +58,7 @@ public class ConnectionEventService : IConnectionEventService
             catch (Exception e)
             {
                 logger.LogError(e, "Event saving error {@ConnectionEvent}", connectionEvent);
+                throw;
             }
         }
     }

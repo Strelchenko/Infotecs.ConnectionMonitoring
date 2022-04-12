@@ -43,7 +43,7 @@ public class ConnectionEventController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Save([FromBody] IEnumerable<ConnectionEvent> connectionEvents)
     {
-        await connectionEventService.SaveAsync(connectionEvents);
+        await connectionEventService.SaveEventsAsync(connectionEvents);
 
         return Ok();
     }
