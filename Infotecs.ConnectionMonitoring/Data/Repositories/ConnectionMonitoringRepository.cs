@@ -5,20 +5,27 @@ using Npgsql;
 
 namespace Data.Repositories;
 
+/// <summary>
+/// Repository for work with Db.
+/// </summary>
 public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
 {
     private readonly string connectionString;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConnectionMonitoringRepository"/> class.
+    /// </summary>
+    /// <param name="configuration">Configuration.</param>
     public ConnectionMonitoringRepository(IConfiguration configuration)
     {
         connectionString = configuration.GetConnectionString("InfotecsMonitoring");
     }
 
     /// <summary>
-    /// Get connection by id
+    /// Get connection by id.
     /// </summary>
-    /// <param name="id">Connection identification</param>
-    /// <returns></returns>
+    /// <param name="id">Connection identification.</param>
+    /// <returns>Connection.</returns>
     public async Task<ConnectionInfoEntity?> GetConnectionInfoByIdAsync(string id)
     {
         using (var connection = new NpgsqlConnection(connectionString))
@@ -32,9 +39,9 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     }
 
     /// <summary>
-    /// Get all connections
+    /// Get all connections.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>List of connections.</returns>
     public async Task<IEnumerable<ConnectionInfoEntity>> GetAllConnectionsInfoAsync()
     {
         using (var connection = new NpgsqlConnection(connectionString))
@@ -46,40 +53,40 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     }
 
     /// <summary>
-    /// Create connection
+    /// Create connection.
     /// </summary>
-    /// <param name="connectionInfo">Connection</param>
-    /// <returns></returns>
+    /// <param name="connectionInfo">Connection.</param>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task CreateConnectionInfoAsync(ConnectionInfoEntity connectionInfo)
     {
         using (var connection = new NpgsqlConnection(connectionString))
         {
             var commandText = "INSERT INTO \"ConnectionInfo\" (\"Id\", \"UserName\", \"Os\", \"AppVersion\", \"LastConnection\") VALUES (@Id, @UserName, @Os, @AppVersion, @LastConnection)";
-            
+
             await connection.ExecuteAsync(commandText, connectionInfo);
         }
     }
 
     /// <summary>
-    /// Update connection
+    /// Update connection.
     /// </summary>
-    /// <param name="connectionInfo">Connection</param>
-    /// <returns></returns>
+    /// <param name="connectionInfo">Connection.</param>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task UpdateConnectionInfoAsync(ConnectionInfoEntity connectionInfo)
     {
         using (var connection = new NpgsqlConnection(connectionString))
         {
             var commandText = "UPDATE \"ConnectionInfo\" SET \"UserName\" = @UserName, \"Os\" = @Os, \"AppVersion\" = @AppVersion, \"LastConnection\" = @LastConnection WHERE \"Id\" = @id";
-            
+
             await connection.ExecuteAsync(commandText, connectionInfo);
         }
     }
 
     /// <summary>
-    /// Delete connection
+    /// Delete connection.
     /// </summary>
-    /// <param name="id">Connection identification</param>
-    /// <returns></returns>
+    /// <param name="id">Connection identification.</param>
+    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task DeleteConnectionInfoAsync(string id)
     {
         using (var connection = new NpgsqlConnection(connectionString))

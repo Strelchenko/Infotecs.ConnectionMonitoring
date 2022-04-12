@@ -2,18 +2,21 @@ using Core.Models;
 
 namespace Core.Services;
 
+/// <summary>
+/// ConnectionInfoService interface.
+/// </summary>
 public interface IConnectionInfoService
 {
     /// <summary>
-    /// Get all connections
+    /// Get all connections.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>List of connections.</returns>
     Task<ConnectionInfo[]> GetAllAsync();
 
     /// <summary>
-    /// Create or update connection info
+    /// Create or update connection info.
     /// </summary>
-    /// <param name="connectionInfo">Connection info</param>
-    /// <returns></returns>
+    /// <param name="connectionInfo">Connection info.</param>
+    /// <returns>Task.</returns>
     Task SaveAsync(ConnectionInfo connectionInfo);
 }

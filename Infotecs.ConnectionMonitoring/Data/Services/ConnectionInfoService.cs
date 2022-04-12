@@ -7,11 +7,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Data.Services;
 
+/// <summary>
+/// Service for work with ConnectionInfo.
+/// </summary>
 public class ConnectionInfoService : IConnectionInfoService
 {
     private readonly ILogger<ConnectionInfoService> logger;
     private readonly IConnectionMonitoringRepository repository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConnectionInfoService"/> class.
+    /// </summary>
+    /// <param name="logger">Logger.</param>
+    /// <param name="repository">Repository.</param>
     public ConnectionInfoService(ILogger<ConnectionInfoService> logger, IConnectionMonitoringRepository repository)
     {
         this.logger = logger;
@@ -19,9 +27,9 @@ public class ConnectionInfoService : IConnectionInfoService
     }
 
     /// <summary>
-    /// Get all connections
+    /// Get all connections.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>List of connections.</returns>
     public async Task<ConnectionInfo[]> GetAllAsync()
     {
         logger.LogInformation("Get all devices");
@@ -32,11 +40,11 @@ public class ConnectionInfoService : IConnectionInfoService
     }
 
     /// <summary>
-    /// Create or update connection info
+    /// Create or update connection info.
     /// </summary>
-    /// <param name="connectionInfo">Connection info</param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
+    /// <param name="connectionInfo">Connection info.</param>
+    /// <returns>Task.</returns>
+    /// <exception cref="Exception">Exception.</exception>
     public async Task SaveAsync(ConnectionInfo connectionInfo)
     {
         if (connectionInfo.Id == null)
