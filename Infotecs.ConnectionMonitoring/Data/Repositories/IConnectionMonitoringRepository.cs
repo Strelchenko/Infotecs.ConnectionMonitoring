@@ -1,3 +1,4 @@
+using Core.Models;
 using Data.Models;
 
 namespace Data.Repositories;
@@ -40,4 +41,18 @@ public interface IConnectionMonitoringRepository
     /// <param name="id">Connection identification.</param>
     /// <returns>Task.</returns>
     Task DeleteConnectionInfoAsync(string id);
+
+    /// <summary>
+    /// Get all events for current connection.
+    /// </summary>
+    /// <param name="connectionId">Connection Id.</param>
+    /// <returns>List of events.</returns>
+    Task<IEnumerable<ConnectionEventEntity>> GetEventsByConnectionIdAsync(string connectionId);
+
+    /// <summary>
+    /// Create event.
+    /// </summary>
+    /// <param name="connectionEvent">Event.</param>
+    /// <returns>Task.</returns>
+    Task CreateConnectionEventAsync(ConnectionEventEntity connectionEvent);
 }
