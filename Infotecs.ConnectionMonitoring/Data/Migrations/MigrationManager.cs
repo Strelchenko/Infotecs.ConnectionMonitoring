@@ -25,7 +25,7 @@ public static class MigrationManager
 
             try
             {
-                databaseService.CreateDatabase("InfotecsDb");
+                databaseService.CreateDatabase();
 
                 migrationService.ListMigrations();
                 migrationService.MigrateUp();
