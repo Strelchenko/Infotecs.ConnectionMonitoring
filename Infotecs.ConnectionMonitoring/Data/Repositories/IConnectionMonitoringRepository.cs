@@ -43,6 +43,13 @@ public interface IConnectionMonitoringRepository
     Task DeleteConnectionInfoAsync(string id);
 
     /// <summary>
+    /// Get connection event by id.
+    /// </summary>
+    /// <param name="id">ConnectionEvent identification.</param>
+    /// <returns>ConnectionEvent.</returns>
+    Task<ConnectionEventEntity?> GetConnectionEventByIdAsync(string id);
+
+    /// <summary>
     /// Get all events for current connection.
     /// </summary>
     /// <param name="connectionId">Connection Id.</param>

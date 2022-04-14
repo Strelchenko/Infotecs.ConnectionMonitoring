@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture.Xunit2;
-using Core.Models;
 using Dapper;
 using Data.Models;
 using Data.Repositories;
@@ -17,7 +15,7 @@ using Xunit;
 namespace Tests
 {
     /// <summary>
-    /// Test onnectionMonitoringRepository.
+    /// Test ConnectionMonitoringRepository.
     /// </summary>
     public class ConnectionMonitoringRepositoryTest : IAsyncLifetime
     {
@@ -61,16 +59,13 @@ namespace Tests
             // Act
             await repository.CreateConnectionInfoAsync(connectionInfo);
 
-            if (connectionInfo.Id != null)
-            {
-                ConnectionInfoEntity? result = await repository.GetConnectionInfoByIdAsync(connectionInfo.Id);
+            ConnectionInfoEntity? result = await repository.GetConnectionInfoByIdAsync(connectionInfo.Id);
 
-                // Assert
-                result.Should().NotBeNull();
-                result.Should().BeEquivalentTo(connectionInfo, options => options
-                    .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(1000)))
-                    .WhenTypeIs<DateTime>());
-            }
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(connectionInfo, options => options
+                .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(1000)))
+                .WhenTypeIs<DateTime>());
         }
 
         /// <summary>
@@ -90,19 +85,16 @@ namespace Tests
             // Act
             await repository.UpdateConnectionInfoAsync(newConnectionInfo);
 
-            if (newConnectionInfo.Id != null)
-            {
-                ConnectionInfoEntity? result = await repository.GetConnectionInfoByIdAsync(newConnectionInfo.Id);
+            ConnectionInfoEntity? result = await repository.GetConnectionInfoByIdAsync(newConnectionInfo.Id);
 
-                // Assert
-                result.Should().NotBeNull();
-                result.Should().BeEquivalentTo(newConnectionInfo, options => options
-                    .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(1000)))
-                    .WhenTypeIs<DateTime>());
-                result.Should().NotBeEquivalentTo(baseConnectionInfo, options => options
-                    .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(1000)))
-                    .WhenTypeIs<DateTime>());
-            }
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(newConnectionInfo, options => options
+                .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(1000)))
+                .WhenTypeIs<DateTime>());
+            result.Should().NotBeEquivalentTo(baseConnectionInfo, options => options
+                .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(1000)))
+                .WhenTypeIs<DateTime>());
         }
 
         /// <summary>
@@ -135,22 +127,19 @@ namespace Tests
         [Theory, AutoData]
         public async Task DeleteConnectionInfoAsync_SuccessfulDelete(ConnectionInfoEntity connectionInfo)
         {
-            if (connectionInfo.Id != null)
-            {
-                // Arrange
-                await repository.CreateConnectionInfoAsync(connectionInfo);
+            // Arrange
+            await repository.CreateConnectionInfoAsync(connectionInfo);
 
-                ConnectionInfoEntity? newConnectionInfo = await repository.GetConnectionInfoByIdAsync(connectionInfo.Id);
+            ConnectionInfoEntity? newConnectionInfo = await repository.GetConnectionInfoByIdAsync(connectionInfo.Id);
 
-                // Act
-                await repository.DeleteConnectionInfoAsync(connectionInfo.Id);
+            // Act
+            await repository.DeleteConnectionInfoAsync(connectionInfo.Id);
 
-                ConnectionInfoEntity? result = await repository.GetConnectionInfoByIdAsync(connectionInfo.Id);
+            ConnectionInfoEntity? result = await repository.GetConnectionInfoByIdAsync(connectionInfo.Id);
 
-                // Assert
-                newConnectionInfo.Should().NotBeNull();
-                result.Should().BeNull();
-            }
+            // Assert
+            newConnectionInfo.Should().NotBeNull();
+            result.Should().BeNull();
         }
 
         /// <summary>
@@ -170,23 +159,15 @@ namespace Tests
             // Act
             await repository.CreateConnectionEventAsync(connectionEvent);
 
-            if (connectionEvent.Id != null)
-            {
-                using (IDbConnection connection = new NpgsqlConnection(connectionString))
-                {
-                    var commandText = "SELECT * FROM \"ConnectionEvent\" WHERE \"Id\" = @id";
+            connectionEvent.Id.Should().NotBeNull();
 
-                    var queryArgs = new { Id = connectionEvent.Id };
+            ConnectionEventEntity? result = await repository.GetConnectionEventByIdAsync(connectionEvent.Id);
 
-                    var result = await connection.QueryFirstOrDefaultAsync<ConnectionEventEntity>(commandText, queryArgs);
-
-                    // Assert
-                    result.Should().NotBeNull();
-                    result.Should().BeEquivalentTo(connectionEvent, options => options
-                        .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(1000)))
-                        .WhenTypeIs<DateTime>());
-                }
-            }
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(connectionEvent, options => options
+                .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, new TimeSpan(1000)))
+                .WhenTypeIs<DateTime>());
         }
 
         /// <summary>

@@ -100,6 +100,23 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     }
 
     /// <summary>
+    /// Get connection event by id.
+    /// </summary>
+    /// <param name="id">ConnectionEvent identification.</param>
+    /// <returns>ConnectionEvent.</returns>
+    public async Task<ConnectionEventEntity?> GetConnectionEventByIdAsync(string id)
+    {
+        using (var connection = new NpgsqlConnection(connectionString))
+        {
+            var commandText = "SELECT * FROM \"ConnectionEvent\" WHERE \"Id\" = @id";
+
+            var queryArgs = new { Id = id };
+
+            return await connection.QueryFirstOrDefaultAsync<ConnectionEventEntity>(commandText, queryArgs);
+        }
+    }
+
+    /// <summary>
     /// Get all events for current connection.
     /// </summary>
     /// <param name="connectionId">Connection Id.</param>
