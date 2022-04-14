@@ -4,6 +4,7 @@ using System.Data;
 using System.Threading.Tasks;
 using AutoFixture.Xunit2;
 using Dapper;
+using Data;
 using Data.Models;
 using Data.Repositories;
 using FluentAssertions;
@@ -22,6 +23,7 @@ namespace Tests
         private readonly IConfiguration config;
         private readonly ConnectionMonitoringRepository repository;
         private readonly string connectionString;
+        private readonly DbSession dbSession;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectionMonitoringRepositoryTest"/> class.
@@ -29,7 +31,8 @@ namespace Tests
         public ConnectionMonitoringRepositoryTest()
         {
             config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            repository = new ConnectionMonitoringRepository(config);
+            dbSession = new DbSession(config);
+            repository = new ConnectionMonitoringRepository(config, dbSession);
             connectionString = config.GetConnectionString("InfotecsMonitoring");
         }
 

@@ -1,5 +1,8 @@
+using Core.Models;
 using Core.Services;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Models;
 using ConnectionInfo = Core.Models.ConnectionInfo;
 
 namespace WebApi.Controllers;
@@ -48,6 +51,24 @@ public class ConnectionInfoController : ControllerBase
         logger.LogInformation("Connection: {@ConnectionInfo}", connectionInfo);
 
         await connectionInfoService.SaveAsync(connectionInfo);
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Create or update connection info with events.
+    /// </summary>
+    /// <param name="connectionInfoRequest">Connection with events.</param>
+    /// <returns>Task.</returns>
+    [HttpPost("addWithEvents")]
+    public async Task<ActionResult> SaveWithEvents([FromBody] AddConnectionInfoRequest connectionInfoRequest)
+    {
+        logger.LogInformation("Connection: {@ConnectionInfo}", connectionInfoRequest);
+
+        var connectionInfo = connectionInfoRequest.Adapt<ConnectionInfo>();
+        var connectionEvents = connectionInfoRequest.Events.Adapt<IEnumerable<ConnectionEvent>>();
+
+        await connectionInfoService.SaveAsync(connectionInfo, connectionEvents);
 
         return Ok();
     }

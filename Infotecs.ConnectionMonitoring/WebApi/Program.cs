@@ -1,8 +1,10 @@
 using System.Reflection;
 using Core.Services;
+using Data;
 using Data.Migrations;
 using Data.Repositories;
 using Data.Services;
+using Data.UnitOfWork;
 using FluentMigrator.Runner;
 using Serilog;
 
@@ -29,6 +31,9 @@ builder.Services.AddLogging(c => c.AddFluentMigratorConsole())
 builder.Services.AddCors();
 
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<DbSession>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IConnectionMonitoringRepository, ConnectionMonitoringRepository>();
 builder.Services.AddTransient<IConnectionInfoService, ConnectionInfoService>();
 builder.Services.AddTransient<IConnectionEventService, ConnectionEventService>();

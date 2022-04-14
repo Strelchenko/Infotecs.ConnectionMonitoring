@@ -2,6 +2,7 @@ using Core.Models;
 using Core.Services;
 using Data.Models;
 using Data.Repositories;
+using Data.UnitOfWork;
 using Mapster;
 using Microsoft.Extensions.Logging;
 
@@ -14,16 +15,19 @@ public class ConnectionEventService : IConnectionEventService
 {
     private readonly ILogger<ConnectionInfoService> logger;
     private readonly IConnectionMonitoringRepository repository;
+    private readonly IUnitOfWork unitOfWork;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionEventService"/> class.
     /// </summary>
     /// <param name="logger">Logger.</param>
     /// <param name="repository">Repository.</param>
-    public ConnectionEventService(ILogger<ConnectionInfoService> logger, IConnectionMonitoringRepository repository)
+    /// <param name="unitOfWork">UnitOfWork.</param>
+    public ConnectionEventService(ILogger<ConnectionInfoService> logger, IConnectionMonitoringRepository repository, IUnitOfWork unitOfWork)
     {
         this.logger = logger;
         this.repository = repository;
+        this.unitOfWork = unitOfWork;
     }
 
     /// <summary>
@@ -49,16 +53,23 @@ public class ConnectionEventService : IConnectionEventService
     {
         foreach (ConnectionEvent connectionEvent in connectionEvents)
         {
+            unitOfWork.BeginTransaction();
             try
             {
                 logger.LogInformation("Event: {@ConnectionEvent}", connectionEvent);
                 connectionEvent.Id ??= Guid.NewGuid().ToString();
                 await repository.CreateConnectionEventAsync(connectionEvent.Adapt<ConnectionEventEntity>());
+                unitOfWork.Commit();
             }
             catch (Exception e)
             {
+                unitOfWork.Rollback();
                 logger.LogError(e, "Event saving error {@ConnectionEvent}", connectionEvent);
                 throw;
+            }
+            finally
+            {
+                unitOfWork.Dispose();
             }
         }
     }
