@@ -1,9 +1,9 @@
 using Core.Models;
 using Core.Services;
 using Data.Models;
-using Data.Repositories;
 using Data.UnitOfWork;
 using Mapster;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Data.Services;
@@ -14,20 +14,17 @@ namespace Data.Services;
 public class ConnectionEventService : IConnectionEventService
 {
     private readonly ILogger<ConnectionInfoService> logger;
-    private readonly IConnectionMonitoringRepository repository;
-    private readonly IUnitOfWork unitOfWork;
+    private readonly IConfiguration configuration;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionEventService"/> class.
     /// </summary>
     /// <param name="logger">Logger.</param>
-    /// <param name="repository">Repository.</param>
-    /// <param name="unitOfWork">UnitOfWork.</param>
-    public ConnectionEventService(ILogger<ConnectionInfoService> logger, IConnectionMonitoringRepository repository, IUnitOfWork unitOfWork)
+    /// <param name="configuration">IConfiguration.</param>
+    public ConnectionEventService(ILogger<ConnectionInfoService> logger, IConfiguration configuration)
     {
         this.logger = logger;
-        this.repository = repository;
-        this.unitOfWork = unitOfWork;
+        this.configuration = configuration;
     }
 
     /// <summary>
@@ -39,9 +36,12 @@ public class ConnectionEventService : IConnectionEventService
     {
         logger.LogInformation($"Get all events by connection id - {connectionId}");
 
-        var result = await repository.GetEventsByConnectionIdAsync(connectionId);
+        using (var unitOfWork = new DapperUnitOfWork(configuration))
+        {
+            var result = await unitOfWork.ConnectionMonitoringRepository.GetEventsByConnectionIdAsync(connectionId);
 
-        return result.Adapt<ConnectionEvent[]>();
+            return result.Adapt<ConnectionEvent[]>();
+        }
     }
 
     /// <summary>
@@ -51,25 +51,23 @@ public class ConnectionEventService : IConnectionEventService
     /// <returns>Task.</returns>
     public async Task SaveEventsAsync(IEnumerable<ConnectionEvent> connectionEvents)
     {
-        foreach (ConnectionEvent connectionEvent in connectionEvents)
+        using (var unitOfWork = new DapperUnitOfWork(configuration))
         {
-            unitOfWork.BeginTransaction();
-            try
+            foreach (ConnectionEvent connectionEvent in connectionEvents)
             {
-                logger.LogInformation("Event: {@ConnectionEvent}", connectionEvent);
-                connectionEvent.Id ??= Guid.NewGuid().ToString();
-                await repository.CreateConnectionEventAsync(connectionEvent.Adapt<ConnectionEventEntity>());
-                unitOfWork.Commit();
-            }
-            catch (Exception e)
-            {
-                unitOfWork.Rollback();
-                logger.LogError(e, "Event saving error {@ConnectionEvent}", connectionEvent);
-                throw;
-            }
-            finally
-            {
-                unitOfWork.Dispose();
+                try
+                {
+                    logger.LogInformation("Event: {@ConnectionEvent}", connectionEvent);
+                    connectionEvent.Id ??= Guid.NewGuid().ToString();
+                    await unitOfWork.ConnectionMonitoringRepository.CreateConnectionEventAsync(connectionEvent.Adapt<ConnectionEventEntity>());
+                    unitOfWork.Commit();
+                }
+                catch (Exception e)
+                {
+                    unitOfWork.Rollback();
+                    logger.LogError(e, "Event saving error {@ConnectionEvent}", connectionEvent);
+                    throw;
+                }
             }
         }
     }

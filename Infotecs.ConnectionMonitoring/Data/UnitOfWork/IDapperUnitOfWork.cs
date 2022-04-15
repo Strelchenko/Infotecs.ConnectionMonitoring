@@ -3,13 +3,8 @@ namespace Data.UnitOfWork;
 /// <summary>
 /// InterfaceUnitOfWork.
 /// </summary>
-public interface IUnitOfWork : IDisposable
+public interface IDapperUnitOfWork : IDisposable
 {
-    /// <summary>
-    /// Begin transaction.
-    /// </summary>
-    void BeginTransaction();
-
     /// <summary>
     /// Commit changes.
     /// </summary>

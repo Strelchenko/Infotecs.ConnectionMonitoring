@@ -7,6 +7,7 @@ using Dapper;
 using Data;
 using Data.Models;
 using Data.Repositories;
+using Data.UnitOfWork;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -21,9 +22,8 @@ namespace Tests
     public class ConnectionMonitoringRepositoryTest : IAsyncLifetime
     {
         private readonly IConfiguration config;
-        private readonly ConnectionMonitoringRepository repository;
+        private readonly DapperUnitOfWork unitOfWork;
         private readonly string connectionString;
-        private readonly DbSession dbSession;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectionMonitoringRepositoryTest"/> class.
@@ -31,8 +31,7 @@ namespace Tests
         public ConnectionMonitoringRepositoryTest()
         {
             config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            dbSession = new DbSession(config);
-            repository = new ConnectionMonitoringRepository(config, dbSession);
+            unitOfWork = new DapperUnitOfWork(config);
             connectionString = config.GetConnectionString("InfotecsMonitoring");
         }
 
@@ -60,9 +59,9 @@ namespace Tests
         public async Task CreateConnectionInfoAsync_SuccessfulCreation(ConnectionInfoEntity connectionInfo)
         {
             // Act
-            await repository.CreateConnectionInfoAsync(connectionInfo);
+            await unitOfWork.ConnectionMonitoringRepository.CreateConnectionInfoAsync(connectionInfo);
 
-            ConnectionInfoEntity? result = await repository.GetConnectionInfoByIdAsync(connectionInfo.Id);
+            ConnectionInfoEntity? result = await unitOfWork.ConnectionMonitoringRepository.GetConnectionInfoByIdAsync(connectionInfo.Id);
 
             // Assert
             result.Should().NotBeNull();
@@ -81,14 +80,14 @@ namespace Tests
         public async Task UpdateConnectionInfoAsync_SuccessfulUpdating(ConnectionInfoEntity baseConnectionInfo, ConnectionInfoEntity newConnectionInfo)
         {
             // Arrange
-            await repository.CreateConnectionInfoAsync(baseConnectionInfo);
+            await unitOfWork.ConnectionMonitoringRepository.CreateConnectionInfoAsync(baseConnectionInfo);
 
             newConnectionInfo.Id = baseConnectionInfo.Id;
 
             // Act
-            await repository.UpdateConnectionInfoAsync(newConnectionInfo);
+            await unitOfWork.ConnectionMonitoringRepository.UpdateConnectionInfoAsync(newConnectionInfo);
 
-            ConnectionInfoEntity? result = await repository.GetConnectionInfoByIdAsync(newConnectionInfo.Id);
+            ConnectionInfoEntity? result = await unitOfWork.ConnectionMonitoringRepository.GetConnectionInfoByIdAsync(newConnectionInfo.Id);
 
             // Assert
             result.Should().NotBeNull();
@@ -111,11 +110,11 @@ namespace Tests
             // Arrange
             foreach (ConnectionInfoEntity connection in connections)
             {
-                await repository.CreateConnectionInfoAsync(connection);
+                await unitOfWork.ConnectionMonitoringRepository.CreateConnectionInfoAsync(connection);
             }
 
             // Act
-            IEnumerable<ConnectionInfoEntity> result = await repository.GetAllConnectionsInfoAsync();
+            IEnumerable<ConnectionInfoEntity> result = await unitOfWork.ConnectionMonitoringRepository.GetAllConnectionsInfoAsync();
 
             // Assert
             result.Should().NotBeEmpty();
@@ -131,14 +130,14 @@ namespace Tests
         public async Task DeleteConnectionInfoAsync_SuccessfulDelete(ConnectionInfoEntity connectionInfo)
         {
             // Arrange
-            await repository.CreateConnectionInfoAsync(connectionInfo);
+            await unitOfWork.ConnectionMonitoringRepository.CreateConnectionInfoAsync(connectionInfo);
 
-            ConnectionInfoEntity? newConnectionInfo = await repository.GetConnectionInfoByIdAsync(connectionInfo.Id);
+            ConnectionInfoEntity? newConnectionInfo = await unitOfWork.ConnectionMonitoringRepository.GetConnectionInfoByIdAsync(connectionInfo.Id);
 
             // Act
-            await repository.DeleteConnectionInfoAsync(connectionInfo.Id);
+            await unitOfWork.ConnectionMonitoringRepository.DeleteConnectionInfoAsync(connectionInfo.Id);
 
-            ConnectionInfoEntity? result = await repository.GetConnectionInfoByIdAsync(connectionInfo.Id);
+            ConnectionInfoEntity? result = await unitOfWork.ConnectionMonitoringRepository.GetConnectionInfoByIdAsync(connectionInfo.Id);
 
             // Assert
             newConnectionInfo.Should().NotBeNull();
@@ -155,16 +154,16 @@ namespace Tests
         public async Task CreateConnectionEventAsync_SuccessfulCreation(ConnectionEventEntity connectionEvent, ConnectionInfoEntity connectionInfo)
         {
             // Arrange
-            await repository.CreateConnectionInfoAsync(connectionInfo);
+            await unitOfWork.ConnectionMonitoringRepository.CreateConnectionInfoAsync(connectionInfo);
 
             connectionEvent.ConnectionId = connectionInfo.Id;
 
             // Act
-            await repository.CreateConnectionEventAsync(connectionEvent);
+            await unitOfWork.ConnectionMonitoringRepository.CreateConnectionEventAsync(connectionEvent);
 
             connectionEvent.Id.Should().NotBeNull();
 
-            ConnectionEventEntity? result = await repository.GetConnectionEventByIdAsync(connectionEvent.Id);
+            ConnectionEventEntity? result = await unitOfWork.ConnectionMonitoringRepository.GetConnectionEventByIdAsync(connectionEvent.Id);
 
             // Assert
             result.Should().NotBeNull();
@@ -183,16 +182,16 @@ namespace Tests
         public async Task GetEventsByConnectionIdAsync_SuccessfulReturnAllConnectionEvent(ConnectionEventEntity[] connectionEvents, ConnectionInfoEntity connectionInfo)
         {
             // Arrange
-            await repository.CreateConnectionInfoAsync(connectionInfo);
+            await unitOfWork.ConnectionMonitoringRepository.CreateConnectionInfoAsync(connectionInfo);
 
             foreach (ConnectionEventEntity connectionEvent in connectionEvents)
             {
                 connectionEvent.ConnectionId = connectionInfo.Id;
-                await repository.CreateConnectionEventAsync(connectionEvent);
+                await unitOfWork.ConnectionMonitoringRepository.CreateConnectionEventAsync(connectionEvent);
             }
 
             // Act
-            IEnumerable<ConnectionEventEntity> result = await repository.GetEventsByConnectionIdAsync(connectionInfo.Id);
+            IEnumerable<ConnectionEventEntity> result = await unitOfWork.ConnectionMonitoringRepository.GetEventsByConnectionIdAsync(connectionInfo.Id);
 
             // Assert
             result.Should().NotBeEmpty();

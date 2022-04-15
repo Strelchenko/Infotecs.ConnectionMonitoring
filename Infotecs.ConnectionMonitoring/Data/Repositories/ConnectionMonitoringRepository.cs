@@ -1,6 +1,6 @@
+using System.Data;
 using Dapper;
 using Data.Models;
-using Microsoft.Extensions.Configuration;
 
 namespace Data.Repositories;
 
@@ -9,19 +9,18 @@ namespace Data.Repositories;
 /// </summary>
 public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
 {
-    private readonly string connectionString;
-    private DbSession session;
+    private readonly IDbTransaction transaction;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionMonitoringRepository"/> class.
     /// </summary>
-    /// <param name="configuration">Configuration.</param>
-    /// <param name="session">DbSession.</param>
-    public ConnectionMonitoringRepository(IConfiguration configuration, DbSession session)
+    /// <param name="transaction">IDbTransaction.</param>
+    public ConnectionMonitoringRepository(IDbTransaction transaction)
     {
-        this.session = session;
-        connectionString = configuration.GetConnectionString("InfotecsMonitoring");
+        this.transaction = transaction;
     }
+
+    private IDbConnection Connection => transaction.Connection;
 
     /// <summary>
     /// Get connection by id.
@@ -34,7 +33,7 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
 
         var queryArgs = new { Id = id };
 
-        return await session.Connection.QueryFirstOrDefaultAsync<ConnectionInfoEntity>(commandText, queryArgs, session.Transaction);
+        return await Connection.QueryFirstOrDefaultAsync<ConnectionInfoEntity>(commandText, queryArgs, transaction);
     }
 
     /// <summary>
@@ -45,7 +44,7 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     {
         var commandText = "SELECT * FROM \"ConnectionInfo\"";
 
-        return await session.Connection.QueryAsync<ConnectionInfoEntity>(commandText, null, session.Transaction);
+        return await Connection.QueryAsync<ConnectionInfoEntity>(commandText, null, transaction);
     }
 
     /// <summary>
@@ -57,7 +56,7 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     {
         var commandText = "INSERT INTO \"ConnectionInfo\" (\"Id\", \"UserName\", \"Os\", \"AppVersion\", \"LastConnection\") VALUES (@Id, @UserName, @Os, @AppVersion, @LastConnection)";
 
-        await session.Connection.ExecuteAsync(commandText, connectionInfo, session.Transaction);
+        await Connection.ExecuteAsync(commandText, connectionInfo, transaction);
     }
 
     /// <summary>
@@ -69,7 +68,7 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     {
         var commandText = "UPDATE \"ConnectionInfo\" SET \"UserName\" = @UserName, \"Os\" = @Os, \"AppVersion\" = @AppVersion, \"LastConnection\" = @LastConnection WHERE \"Id\" = @id";
 
-        await session.Connection.ExecuteAsync(commandText, connectionInfo, session.Transaction);
+        await Connection.ExecuteAsync(commandText, connectionInfo, transaction);
     }
 
     /// <summary>
@@ -83,7 +82,7 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
 
         var queryArguments = new { Id = id };
 
-        await session.Connection.ExecuteAsync(commandText, queryArguments, session.Transaction);
+        await Connection.ExecuteAsync(commandText, queryArguments, transaction);
     }
 
     /// <summary>
@@ -97,7 +96,7 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
 
         var queryArgs = new { Id = id };
 
-        return await session.Connection.QueryFirstOrDefaultAsync<ConnectionEventEntity>(commandText, queryArgs, session.Transaction);
+        return await Connection.QueryFirstOrDefaultAsync<ConnectionEventEntity>(commandText, queryArgs, transaction);
     }
 
     /// <summary>
@@ -111,7 +110,7 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
 
         var queryArgs = new { ConnectionId = connectionId };
 
-        return await session.Connection.QueryAsync<ConnectionEventEntity>(commandText, queryArgs, session.Transaction);
+        return await Connection.QueryAsync<ConnectionEventEntity>(commandText, queryArgs, transaction);
     }
 
     /// <summary>
@@ -123,6 +122,6 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     {
         var commandText = "INSERT INTO \"ConnectionEvent\" (\"Id\", \"Name\", \"ConnectionId\", \"EventTime\") VALUES (@Id, @Name, @ConnectionId, @EventTime)";
 
-        await session.Connection.ExecuteAsync(commandText, connectionEvent, session.Transaction);
+        await Connection.ExecuteAsync(commandText, connectionEvent, transaction);
     }
 }
