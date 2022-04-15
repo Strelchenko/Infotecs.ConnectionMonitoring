@@ -67,6 +67,7 @@ public sealed class DapperUnitOfWork : IDapperUnitOfWork
     {
         if (transaction != null)
         {
+            transaction.Rollback();
             transaction.Dispose();
             transaction = null;
         }

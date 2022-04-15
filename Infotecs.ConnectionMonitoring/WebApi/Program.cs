@@ -32,7 +32,6 @@ builder.Services.AddCors();
 
 builder.Services.AddControllers();
 
-builder.Services.AddTransient<IDapperUnitOfWork, DapperUnitOfWork>();
 builder.Services.AddTransient<IConnectionInfoService, ConnectionInfoService>();
 builder.Services.AddTransient<IConnectionEventService, ConnectionEventService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -64,7 +64,6 @@ public class ConnectionEventService : IConnectionEventService
                 }
                 catch (Exception e)
                 {
-                    unitOfWork.Rollback();
                     logger.LogError(e, "Event saving error {@ConnectionEvent}", connectionEvent);
                     throw;
                 }

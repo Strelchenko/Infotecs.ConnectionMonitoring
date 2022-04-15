@@ -59,38 +59,27 @@ public class ConnectionInfoService : IConnectionInfoService
 
         using (var unitOfWork = new DapperUnitOfWork(configuration))
         {
-
             ConnectionInfoEntity? exist = await unitOfWork.ConnectionMonitoringRepository.GetConnectionInfoByIdAsync(connectionInfo.Id);
 
-            if (exist != null)
+            try
             {
-                try
+                if (exist != null)
                 {
                     await unitOfWork.ConnectionMonitoringRepository.UpdateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
                     logger.LogInformation($"Device with id {connectionInfo.Id} has been updated");
-                    unitOfWork.Commit();
                 }
-                catch (Exception e)
-                {
-                    unitOfWork.Rollback();
-                    logger.LogError(e, "Error while updating ConnectionInfo");
-                    throw;
-                }
-            }
-            else
-            {
-                try
+                else
                 {
                     await unitOfWork.ConnectionMonitoringRepository.CreateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
                     logger.LogInformation($"Device with id {connectionInfo.Id} has been added");
-                    unitOfWork.Commit();
                 }
-                catch (Exception e)
-                {
-                    unitOfWork.Rollback();
-                    logger.LogError(e, "Error while creating ConnectionInfo");
-                    throw;
-                }
+
+                unitOfWork.Commit();
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, $"Error while saving ConnectionInfo {connectionInfo.Id}");
+                throw;
             }
         }
     }
@@ -112,7 +101,6 @@ public class ConnectionInfoService : IConnectionInfoService
 
         using (var unitOfWork = new DapperUnitOfWork(configuration))
         {
-
             ConnectionInfoEntity? exist = await unitOfWork.ConnectionMonitoringRepository.GetConnectionInfoByIdAsync(connectionInfo.Id);
             
             try
@@ -140,7 +128,6 @@ public class ConnectionInfoService : IConnectionInfoService
             }
             catch (Exception e)
             {
-                unitOfWork.Rollback();
                 logger.LogError(e, $"Error while saving ConnectionInfo {connectionInfo.Id}");
                 throw;
             }
