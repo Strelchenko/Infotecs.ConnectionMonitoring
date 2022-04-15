@@ -1,4 +1,3 @@
-using Core.Models;
 using Data.Models;
 
 namespace Data.Repositories;

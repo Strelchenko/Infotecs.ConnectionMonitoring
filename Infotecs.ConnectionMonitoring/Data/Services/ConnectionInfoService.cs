@@ -1,8 +1,9 @@
 using Core.Models;
 using Core.Services;
 using Data.Models;
-using Data.Repositories;
+using Data.UnitOfWork;
 using Mapster;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Data.Services;
@@ -13,17 +14,17 @@ namespace Data.Services;
 public class ConnectionInfoService : IConnectionInfoService
 {
     private readonly ILogger<ConnectionInfoService> logger;
-    private readonly IConnectionMonitoringRepository repository;
+    private readonly IConfiguration configuration;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionInfoService"/> class.
     /// </summary>
     /// <param name="logger">Logger.</param>
-    /// <param name="repository">Repository.</param>
-    public ConnectionInfoService(ILogger<ConnectionInfoService> logger, IConnectionMonitoringRepository repository)
+    /// <param name="configuration">IConfiguration.</param>
+    public ConnectionInfoService(ILogger<ConnectionInfoService> logger, IConfiguration configuration)
     {
         this.logger = logger;
-        this.repository = repository;
+        this.configuration = configuration;
     }
 
     /// <summary>
@@ -34,9 +35,12 @@ public class ConnectionInfoService : IConnectionInfoService
     {
         logger.LogInformation("Get all devices");
 
-        IEnumerable<ConnectionInfoEntity> result = await repository.GetAllConnectionsInfoAsync();
+        using (var unitOfWork = new DapperUnitOfWork(configuration))
+        {
+            IEnumerable<ConnectionInfoEntity> result = await unitOfWork.ConnectionMonitoringRepository.GetAllConnectionsInfoAsync();
 
-        return result.Adapt<ConnectionInfo[]>();
+            return result.Adapt<ConnectionInfo[]>();
+        }
     }
 
     /// <summary>
@@ -53,17 +57,80 @@ public class ConnectionInfoService : IConnectionInfoService
             throw new Exception("Id can not be null");
         }
 
-        ConnectionInfoEntity? exist = await repository.GetConnectionInfoByIdAsync(connectionInfo.Id);
+        using (var unitOfWork = new DapperUnitOfWork(configuration))
+        {
+            ConnectionInfoEntity? exist = await unitOfWork.ConnectionMonitoringRepository.GetConnectionInfoByIdAsync(connectionInfo.Id);
 
-        if (exist != null)
-        {
-            await repository.UpdateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
-            logger.LogInformation($"Device with id {connectionInfo.Id} has been updated");
+            try
+            {
+                if (exist != null)
+                {
+                    await unitOfWork.ConnectionMonitoringRepository.UpdateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
+                    logger.LogInformation($"Device with id {connectionInfo.Id} has been updated");
+                }
+                else
+                {
+                    await unitOfWork.ConnectionMonitoringRepository.CreateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
+                    logger.LogInformation($"Device with id {connectionInfo.Id} has been added");
+                }
+
+                unitOfWork.Commit();
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, $"Error while saving ConnectionInfo {connectionInfo.Id}");
+                throw;
+            }
         }
-        else
+    }
+
+    /// <summary>
+    /// Create or update connection info with events.
+    /// </summary>
+    /// <param name="connectionInfo">Connection info.</param>
+    /// <param name="events">List of connection info events.</param>
+    /// <returns>Task.</returns>
+    /// <exception cref="Exception">Exception.</exception>
+    public async Task SaveAsync(ConnectionInfo connectionInfo, IEnumerable<ConnectionEvent> events)
+    {
+        if (connectionInfo.Id == null)
         {
-            await repository.CreateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
-            logger.LogInformation($"Device with id {connectionInfo.Id} has been added");
+            logger.LogError("Id can not be null");
+            throw new Exception("Id can not be null");
+        }
+
+        using (var unitOfWork = new DapperUnitOfWork(configuration))
+        {
+            ConnectionInfoEntity? exist = await unitOfWork.ConnectionMonitoringRepository.GetConnectionInfoByIdAsync(connectionInfo.Id);
+            
+            try
+            {
+                if (exist != null)
+                {
+                    await unitOfWork.ConnectionMonitoringRepository.UpdateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
+                    logger.LogInformation($"Device with id {connectionInfo.Id} has been updated");
+                }
+                else
+                {
+                    await unitOfWork.ConnectionMonitoringRepository.CreateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
+                    logger.LogInformation($"Device with id {connectionInfo.Id} has been added");
+                }
+
+                foreach (ConnectionEvent connectionEvent in events)
+                {
+                    logger.LogInformation("Event: {@ConnectionEvent}", connectionEvent);
+                    connectionEvent.Id ??= Guid.NewGuid().ToString();
+                    connectionEvent.ConnectionId = connectionInfo.Id;
+                    await unitOfWork.ConnectionMonitoringRepository.CreateConnectionEventAsync(connectionEvent.Adapt<ConnectionEventEntity>());
+                }
+
+                unitOfWork.Commit();
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, $"Error while saving ConnectionInfo {connectionInfo.Id}");
+                throw;
+            }
         }
     }
 }

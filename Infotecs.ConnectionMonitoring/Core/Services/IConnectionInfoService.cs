@@ -19,4 +19,12 @@ public interface IConnectionInfoService
     /// <param name="connectionInfo">Connection info.</param>
     /// <returns>Task.</returns>
     Task SaveAsync(ConnectionInfo connectionInfo);
+
+    /// <summary>
+    /// Create or update connection info with events.
+    /// </summary>
+    /// <param name="connectionInfo">Connection info.</param>
+    /// <param name="events">List of connection info events.</param>
+    /// <returns>Task.</returns>
+    Task SaveAsync(ConnectionInfo connectionInfo, IEnumerable<ConnectionEvent> events);
 }

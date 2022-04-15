@@ -1,7 +1,6 @@
+using System.Data;
 using Dapper;
 using Data.Models;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 
 namespace Data.Repositories;
 
@@ -10,16 +9,18 @@ namespace Data.Repositories;
 /// </summary>
 public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
 {
-    private readonly string connectionString;
+    private readonly IDbTransaction transaction;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionMonitoringRepository"/> class.
     /// </summary>
-    /// <param name="configuration">Configuration.</param>
-    public ConnectionMonitoringRepository(IConfiguration configuration)
+    /// <param name="transaction">IDbTransaction.</param>
+    public ConnectionMonitoringRepository(IDbTransaction transaction)
     {
-        connectionString = configuration.GetConnectionString("InfotecsMonitoring");
+        this.transaction = transaction;
     }
+
+    private IDbConnection Connection => transaction.Connection;
 
     /// <summary>
     /// Get connection by id.
@@ -28,14 +29,11 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     /// <returns>Connection.</returns>
     public async Task<ConnectionInfoEntity?> GetConnectionInfoByIdAsync(string id)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
-        {
-            var commandText = "SELECT * FROM \"ConnectionInfo\" WHERE \"Id\" = @id";
+        var commandText = "SELECT * FROM \"ConnectionInfo\" WHERE \"Id\" = @id";
 
-            var queryArgs = new { Id = id };
+        var queryArgs = new { Id = id };
 
-            return await connection.QueryFirstOrDefaultAsync<ConnectionInfoEntity>(commandText, queryArgs);
-        }
+        return await Connection.QueryFirstOrDefaultAsync<ConnectionInfoEntity>(commandText, queryArgs, transaction);
     }
 
     /// <summary>
@@ -44,12 +42,9 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     /// <returns>List of connections.</returns>
     public async Task<IEnumerable<ConnectionInfoEntity>> GetAllConnectionsInfoAsync()
     {
-        using (var connection = new NpgsqlConnection(connectionString))
-        {
-            var commandText = "SELECT * FROM \"ConnectionInfo\"";
+        var commandText = "SELECT * FROM \"ConnectionInfo\"";
 
-            return await connection.QueryAsync<ConnectionInfoEntity>(commandText);
-        }
+        return await Connection.QueryAsync<ConnectionInfoEntity>(commandText, null, transaction);
     }
 
     /// <summary>
@@ -59,12 +54,9 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task CreateConnectionInfoAsync(ConnectionInfoEntity connectionInfo)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
-        {
-            var commandText = "INSERT INTO \"ConnectionInfo\" (\"Id\", \"UserName\", \"Os\", \"AppVersion\", \"LastConnection\") VALUES (@Id, @UserName, @Os, @AppVersion, @LastConnection)";
+        var commandText = "INSERT INTO \"ConnectionInfo\" (\"Id\", \"UserName\", \"Os\", \"AppVersion\", \"LastConnection\") VALUES (@Id, @UserName, @Os, @AppVersion, @LastConnection)";
 
-            await connection.ExecuteAsync(commandText, connectionInfo);
-        }
+        await Connection.ExecuteAsync(commandText, connectionInfo, transaction);
     }
 
     /// <summary>
@@ -74,12 +66,9 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task UpdateConnectionInfoAsync(ConnectionInfoEntity connectionInfo)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
-        {
-            var commandText = "UPDATE \"ConnectionInfo\" SET \"UserName\" = @UserName, \"Os\" = @Os, \"AppVersion\" = @AppVersion, \"LastConnection\" = @LastConnection WHERE \"Id\" = @id";
+        var commandText = "UPDATE \"ConnectionInfo\" SET \"UserName\" = @UserName, \"Os\" = @Os, \"AppVersion\" = @AppVersion, \"LastConnection\" = @LastConnection WHERE \"Id\" = @id";
 
-            await connection.ExecuteAsync(commandText, connectionInfo);
-        }
+        await Connection.ExecuteAsync(commandText, connectionInfo, transaction);
     }
 
     /// <summary>
@@ -89,14 +78,11 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
     public async Task DeleteConnectionInfoAsync(string id)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
-        {
-            var commandText = "DELETE FROM \"ConnectionInfo\" WHERE \"Id\" = @id";
+        var commandText = "DELETE FROM \"ConnectionInfo\" WHERE \"Id\" = @id";
 
-            var queryArguments = new { Id = id };
+        var queryArguments = new { Id = id };
 
-            await connection.ExecuteAsync(commandText, queryArguments);
-        }
+        await Connection.ExecuteAsync(commandText, queryArguments, transaction);
     }
 
     /// <summary>
@@ -106,14 +92,11 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     /// <returns>ConnectionEvent.</returns>
     public async Task<ConnectionEventEntity?> GetConnectionEventByIdAsync(string id)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
-        {
-            var commandText = "SELECT * FROM \"ConnectionEvent\" WHERE \"Id\" = @id";
+        var commandText = "SELECT * FROM \"ConnectionEvent\" WHERE \"Id\" = @id";
 
-            var queryArgs = new { Id = id };
+        var queryArgs = new { Id = id };
 
-            return await connection.QueryFirstOrDefaultAsync<ConnectionEventEntity>(commandText, queryArgs);
-        }
+        return await Connection.QueryFirstOrDefaultAsync<ConnectionEventEntity>(commandText, queryArgs, transaction);
     }
 
     /// <summary>
@@ -123,14 +106,11 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     /// <returns>List of events.</returns>
     public async Task<IEnumerable<ConnectionEventEntity>> GetEventsByConnectionIdAsync(string connectionId)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
-        {
-            var commandText = "SELECT * FROM \"ConnectionEvent\" WHERE \"ConnectionId\" = @connectionId";
+        var commandText = "SELECT * FROM \"ConnectionEvent\" WHERE \"ConnectionId\" = @connectionId";
 
-            var queryArgs = new { ConnectionId = connectionId };
+        var queryArgs = new { ConnectionId = connectionId };
 
-            return await connection.QueryAsync<ConnectionEventEntity>(commandText, queryArgs);
-        }
+        return await Connection.QueryAsync<ConnectionEventEntity>(commandText, queryArgs, transaction);
     }
 
     /// <summary>
@@ -140,11 +120,8 @@ public class ConnectionMonitoringRepository : IConnectionMonitoringRepository
     /// <returns>Task.</returns>
     public async Task CreateConnectionEventAsync(ConnectionEventEntity connectionEvent)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
-        {
-            var commandText = "INSERT INTO \"ConnectionEvent\" (\"Id\", \"Name\", \"ConnectionId\", \"EventTime\") VALUES (@Id, @Name, @ConnectionId, @EventTime)";
+        var commandText = "INSERT INTO \"ConnectionEvent\" (\"Id\", \"Name\", \"ConnectionId\", \"EventTime\") VALUES (@Id, @Name, @ConnectionId, @EventTime)";
 
-            await connection.ExecuteAsync(commandText, connectionEvent);
-        }
+        await Connection.ExecuteAsync(commandText, connectionEvent, transaction);
     }
 }
