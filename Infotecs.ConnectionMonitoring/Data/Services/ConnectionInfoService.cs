@@ -3,6 +3,7 @@ using Core.Services;
 using Data.Models;
 using Data.UnitOfWork;
 using Mapster;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -15,16 +16,19 @@ public class ConnectionInfoService : IConnectionInfoService
 {
     private readonly ILogger<ConnectionInfoService> logger;
     private readonly IConfiguration configuration;
+    IHubContext<ConnectionInfoHub> hubContext;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionInfoService"/> class.
     /// </summary>
     /// <param name="logger">Logger.</param>
     /// <param name="configuration">IConfiguration.</param>
-    public ConnectionInfoService(ILogger<ConnectionInfoService> logger, IConfiguration configuration)
+    /// <param name="hubContext">ConnectionInfoHub.</param>
+    public ConnectionInfoService(ILogger<ConnectionInfoService> logger, IConfiguration configuration, IHubContext<ConnectionInfoHub> hubContext)
     {
         this.logger = logger;
         this.configuration = configuration;
+        this.hubContext = hubContext;
     }
 
     /// <summary>
@@ -72,6 +76,7 @@ public class ConnectionInfoService : IConnectionInfoService
                 {
                     await unitOfWork.ConnectionMonitoringRepository.CreateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
                     logger.LogInformation($"Device with id {connectionInfo.Id} has been added");
+                    await hubContext.Clients.All.SendAsync("onNewConnectionInfoAdded", connectionInfo);
                 }
 
                 unitOfWork.Commit();
