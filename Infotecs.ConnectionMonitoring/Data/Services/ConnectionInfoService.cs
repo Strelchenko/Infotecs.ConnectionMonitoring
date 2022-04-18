@@ -16,7 +16,7 @@ public class ConnectionInfoService : IConnectionInfoService
 {
     private readonly ILogger<ConnectionInfoService> logger;
     private readonly IConfiguration configuration;
-    IHubContext<ConnectionInfoHub> hubContext;
+    private readonly IHubContext<ConnectionInfoHub> hubContext;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionInfoService"/> class.
@@ -76,10 +76,14 @@ public class ConnectionInfoService : IConnectionInfoService
                 {
                     await unitOfWork.ConnectionMonitoringRepository.CreateConnectionInfoAsync(connectionInfo.Adapt<ConnectionInfoEntity>());
                     logger.LogInformation($"Device with id {connectionInfo.Id} has been added");
-                    await hubContext.Clients.All.SendAsync("onNewConnectionInfoAdded", connectionInfo);
                 }
 
                 unitOfWork.Commit();
+
+                if (exist == null)
+                {
+                    await hubContext.Clients.All.SendAsync("onNewConnectionInfoAdded", connectionInfo);
+                }
             }
             catch (Exception e)
             {
