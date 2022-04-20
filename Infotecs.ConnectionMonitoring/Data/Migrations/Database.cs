@@ -22,16 +22,18 @@ public class Database
     /// </summary>
     public void CreateDatabase()
     {
-        using (var connection = new NpgsqlConnection(configuration.GetConnectionString("InfotecsMonitoring")))
+        using (var connection = new NpgsqlConnection(configuration.GetConnectionString("PostgresAdmin")))
         {
+            string? dbName = new NpgsqlConnectionStringBuilder(configuration.GetConnectionString("InfotecsMonitoring")).Database;
+
             var query = "SELECT DATNAME FROM pg_catalog.pg_database WHERE DATNAME = @name";
 
-            var queryArgs = new { name = connection.Database };
+            var queryArgs = new { name = dbName };
 
             IEnumerable<dynamic>? records = connection.Query(query, queryArgs);
 
             if (!records.Any())
-                connection.Execute($"CREATE DATABASE {connection.Database}");
+                connection.Execute($"CREATE DATABASE \"{dbName}\"");
         }
     }
 }

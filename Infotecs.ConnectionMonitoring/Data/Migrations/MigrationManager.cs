@@ -20,12 +20,13 @@ public static class MigrationManager
         using (IServiceScope scope = host.Services.CreateScope())
         {
             var databaseService = scope.ServiceProvider.GetRequiredService<Database>();
-            var migrationService = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<T>>();
 
             try
             {
                 databaseService.CreateDatabase();
+
+                var migrationService = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
 
                 migrationService.ListMigrations();
                 migrationService.MigrateUp();
