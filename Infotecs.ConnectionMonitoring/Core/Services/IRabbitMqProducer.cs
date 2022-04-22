@@ -1,3 +1,5 @@
+using Core.Models;
+
 namespace Core.Services;
 
 /// <summary>
@@ -8,12 +10,12 @@ public interface IRabbitMqProducer
     /// <summary>
     /// Send message about success adding new event.
     /// </summary>
-    /// <param name="message">Message.</param>
-    void SendSuccessEventMessage(string message);
+    /// <param name="connectionEvent">ConnectionEvent.</param>
+    void SendSuccessEventMessage(ConnectionEvent connectionEvent);
 
     /// <summary>
     /// Send message about error adding new event.
     /// </summary>
-    /// <param name="message">Message.</param>
-    void SendErrorEventMessage(string message);
+    /// <param name="connectionEvent">ConnectionEvent.</param>
+    void SendErrorEventMessage(ConnectionEvent connectionEvent);
 }

@@ -59,29 +59,30 @@ public class ConnectionEventService : IConnectionEventService
         {
             foreach (ConnectionEvent connectionEvent in connectionEvents)
             {
-                var eventMessage = new ConnectionEventRabbitModel();
-
+                var success = false;
                 try
                 {
-                    eventMessage = connectionEvent.Adapt<ConnectionEventRabbitModel>(TypeAdapterConfig<ConnectionEvent, ConnectionEventRabbitModel>
-                        .NewConfig()
-                        .Map(dest => dest.EventId, src => src.Id)
-                        .Map(dest => dest.NodeId, src => src.ConnectionId)
-                        .Map(dest => dest.Name, src => src.Name)
-                        .Map(dest => dest.Date, src => src.EventTime)
-                        .Config);
-
                     logger.LogInformation("Event: {@ConnectionEvent}", connectionEvent);
                     connectionEvent.Id ??= Guid.NewGuid().ToString();
                     await unitOfWork.ConnectionMonitoringRepository.CreateConnectionEventAsync(connectionEvent.Adapt<ConnectionEventEntity>());
                     unitOfWork.Commit();
 
-                    rabbitMqProducer.SendSuccessEventMessage(JsonSerializer.Serialize(eventMessage));
+                    success = true;
                 }
                 catch (Exception e)
                 {
                     logger.LogError(e, "Event saving error {@ConnectionEvent}", connectionEvent);
-                    rabbitMqProducer.SendErrorEventMessage(JsonSerializer.Serialize(eventMessage));
+                }
+                finally
+                {
+                    if (success)
+                    {
+                        rabbitMqProducer.SendSuccessEventMessage(connectionEvent);
+                    }
+                    else
+                    {
+                        rabbitMqProducer.SendErrorEventMessage(connectionEvent);
+                    }
                 }
             }
         }
