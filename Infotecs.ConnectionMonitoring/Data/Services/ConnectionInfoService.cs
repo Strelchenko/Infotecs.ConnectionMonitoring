@@ -134,6 +134,11 @@ public class ConnectionInfoService : IConnectionInfoService
                 }
 
                 unitOfWork.Commit();
+
+                if (exist == null)
+                {
+                    await hubContext.Clients.All.SendAsync("onNewConnectionInfoAdded", connectionInfo);
+                }
             }
             catch (Exception e)
             {

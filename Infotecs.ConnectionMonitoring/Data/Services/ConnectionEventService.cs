@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Core.Models;
 using Core.Services;
 using Data.Models;
@@ -15,16 +16,19 @@ public class ConnectionEventService : IConnectionEventService
 {
     private readonly ILogger<ConnectionInfoService> logger;
     private readonly IConfiguration configuration;
+    private readonly IRabbitMqProducer rabbitMqProducer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionEventService"/> class.
     /// </summary>
     /// <param name="logger">Logger.</param>
     /// <param name="configuration">IConfiguration.</param>
-    public ConnectionEventService(ILogger<ConnectionInfoService> logger, IConfiguration configuration)
+    /// <param name="rabbitMqProducer">IRabbitMqProducer.</param>
+    public ConnectionEventService(ILogger<ConnectionInfoService> logger, IConfiguration configuration, IRabbitMqProducer rabbitMqProducer)
     {
         this.logger = logger;
         this.configuration = configuration;
+        this.rabbitMqProducer = rabbitMqProducer;
     }
 
     /// <summary>
@@ -55,17 +59,30 @@ public class ConnectionEventService : IConnectionEventService
         {
             foreach (ConnectionEvent connectionEvent in connectionEvents)
             {
+                var success = false;
                 try
                 {
                     logger.LogInformation("Event: {@ConnectionEvent}", connectionEvent);
                     connectionEvent.Id ??= Guid.NewGuid().ToString();
                     await unitOfWork.ConnectionMonitoringRepository.CreateConnectionEventAsync(connectionEvent.Adapt<ConnectionEventEntity>());
                     unitOfWork.Commit();
+
+                    success = true;
                 }
                 catch (Exception e)
                 {
                     logger.LogError(e, "Event saving error {@ConnectionEvent}", connectionEvent);
-                    throw;
+                }
+                finally
+                {
+                    if (success)
+                    {
+                        rabbitMqProducer.SendSuccessEventMessage(connectionEvent);
+                    }
+                    else
+                    {
+                        rabbitMqProducer.SendErrorEventMessage(connectionEvent);
+                    }
                 }
             }
         }
